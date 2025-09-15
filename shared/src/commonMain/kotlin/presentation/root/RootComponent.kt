@@ -9,9 +9,12 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
+import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
 
 class RootComponent(
@@ -30,13 +33,39 @@ class RootComponent(
             childFactory = ::createChild
         )
 
+    // to handle back press on tabs other than home tab
+    private val backCallback = BackCallback {
+        // get current active screen
+        val activeChild = childStack.value.active.instance
+
+        // check if on main tab but NOT on the Home screen
+        if (
+            activeChild !is Child.Home &&
+            (activeChild is Child.Movies || activeChild is Child.Tickets || activeChild is Child.Profile)
+        ) {
+            // navigate back to home screen
+            onTabClick(MainNavTab.HOME)
+        } else {
+            // otherwise (on home screen or sub-screens), default action
+            navigation.pop()
+        }
+    }
+
+    init {
+        backHandler.register(backCallback)
+    }
+
     private fun createChild(config: Config, context: ComponentContext): Child =
         when (config) {
+            is Config.Detail -> {
+                // use koin to create instance of movie detail screen viewmodel
+                val viewModel: MovieDetailViewModel by inject { parametersOf(config.movieId) }
+                Child.Detail(viewModel)
+            }
             Config.Home -> Child.Home(homeViewModel)
             Config.Movies -> Child.Movies
             Config.Tickets -> Child.Tickets
             Config.Profile -> Child.Profile
-            is Config.Detail -> Child.Detail(config.movieId)
         }
 
     fun onTabClick(tab: MainNavTab) {
@@ -52,16 +81,13 @@ class RootComponent(
     fun onMovieClick(movieId: Int) {
         navigation.push(Config.Detail(movieId = movieId))
     }
-    fun onBackClicked() {
-        navigation.pop()
-    }
 
     sealed class Child {
         data class Home(val viewModel: HomeViewModel) : Child()
         data object Movies : Child()
         data object Tickets : Child()
         data object Profile : Child()
-        data class Detail(val movieId: Int) : Child()
+        data class Detail(val viewModel: MovieDetailViewModel) : Child()
     }
 
     @Serializable // Use @Serializable on the parent sealed interface
@@ -76,6 +102,10 @@ class RootComponent(
         data object Profile : Config
         @Serializable
         data class Detail(val movieId: Int) : Config
+    }
+
+    fun onBackClicked() {
+        navigation.pop()
     }
 }
 

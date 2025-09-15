@@ -1,6 +1,7 @@
 package data.remote
 
 import com.cinemate.shared.ApiKey
+import data.remote.dto.MovieDetailDto
 import data.remote.dto.MovieResponse
 import domain.model.Movie
 import io.ktor.client.call.body
@@ -13,6 +14,7 @@ interface ApiService {
     suspend fun getTrendingMovies(page: Int = 1): MovieResponse
     suspend fun getNowPlayingMovies(page: Int = 1): MovieResponse
     suspend fun getUpcomingMovies(page: Int = 1): MovieResponse
+    suspend fun getMovieById(movieId: Int): MovieDetailDto
 }
 
 class ApiServiceImpl(private val client: io.ktor.client.HttpClient) : ApiService {
@@ -54,5 +56,11 @@ class ApiServiceImpl(private val client: io.ktor.client.HttpClient) : ApiService
             println("API Error: ${e.message}")
             MovieResponse(page = 0, results = emptyList(), totalPages = 0, totalResults = 0)
         }
+    }
+
+    override suspend fun getMovieById(movieId: Int): MovieDetailDto {
+        return client.get("movie/$movieId") {
+            parameter("api_key", ApiKey.TMDB_API_KEY)
+        }.body()
     }
 }

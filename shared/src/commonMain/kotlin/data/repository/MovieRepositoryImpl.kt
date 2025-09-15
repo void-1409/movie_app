@@ -1,6 +1,7 @@
 package data.repository
 
 import data.remote.ApiService
+import data.remote.dto.MovieDetailDto
 import data.remote.dto.MovieResultDto
 import domain.model.Movie
 import domain.repository.MovieRepository
@@ -22,6 +23,10 @@ class MovieRepositoryImpl(
     override suspend fun getUpComingMovies(): List<Movie> {
         val response = apiService.getUpcomingMovies()
         return response.results.map { it.toDomain() }
+    }
+
+    override suspend fun getMovieById(movieId: Int): MovieDetailDto {
+        return apiService.getMovieById(movieId)
     }
 
     // mapper function to convert the raw DTO to our clean domain model

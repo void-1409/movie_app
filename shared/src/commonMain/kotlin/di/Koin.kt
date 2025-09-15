@@ -7,6 +7,7 @@ import domain.repository.MovieRepository
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
 
 val appModule = module {
@@ -19,6 +20,8 @@ val appModule = module {
 
     // provide a new instance of HomeViewModel every time its requested
     factory { HomeViewModel(get()) }
+
+    factory { (movieId: Int) -> MovieDetailViewModel(movieId = movieId, movieRepository = get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
