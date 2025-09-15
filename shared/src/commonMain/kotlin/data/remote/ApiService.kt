@@ -1,6 +1,7 @@
 package data.remote
 
 import com.cinemate.shared.ApiKey
+import data.remote.dto.MovieCreditsDto
 import data.remote.dto.MovieDetailDto
 import data.remote.dto.MovieResponse
 import domain.model.Movie
@@ -15,6 +16,7 @@ interface ApiService {
     suspend fun getNowPlayingMovies(page: Int = 1): MovieResponse
     suspend fun getUpcomingMovies(page: Int = 1): MovieResponse
     suspend fun getMovieById(movieId: Int): MovieDetailDto
+    suspend fun getMovieCredits(movieId: Int): MovieCreditsDto
 }
 
 class ApiServiceImpl(private val client: io.ktor.client.HttpClient) : ApiService {
@@ -60,6 +62,12 @@ class ApiServiceImpl(private val client: io.ktor.client.HttpClient) : ApiService
 
     override suspend fun getMovieById(movieId: Int): MovieDetailDto {
         return client.get("movie/$movieId") {
+            parameter("api_key", ApiKey.TMDB_API_KEY)
+        }.body()
+    }
+
+    override suspend fun getMovieCredits(movieId: Int): MovieCreditsDto {
+        return client.get("movie/$movieId/credits") {
             parameter("api_key", ApiKey.TMDB_API_KEY)
         }.body()
     }

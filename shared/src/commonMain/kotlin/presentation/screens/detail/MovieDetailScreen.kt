@@ -1,5 +1,6 @@
 package presentation.screens.detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,9 +32,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import data.remote.dto.CastDto
+import data.remote.dto.CrewDto
 import data.remote.dto.MovieDetailDto
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import presentation.components.CreditChip
 
 @Composable
 fun MovieDetailScreen(
@@ -79,6 +85,8 @@ fun MovieDetailScreen(
                     // show main content
                     MovieDetailContent(
                         movie = uiState.movie!!,
+                        cast = uiState.cast,
+                        crew = uiState.crew,
                         onBackClick = onBackClick
                     )
                 }
@@ -90,6 +98,8 @@ fun MovieDetailScreen(
 @Composable
 private fun MovieDetailContent(
     movie: MovieDetailDto,
+    cast: List<CastDto>,
+    crew: List<CrewDto>,
     onBackClick: () -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -118,6 +128,7 @@ private fun MovieDetailContent(
         // Movie Info Section
         item {
             Column(modifier = Modifier.padding(16.dp)) {
+                // movie details
                 Text(
                     text = movie.title,
                     style = MaterialTheme.typography.headlineLarge,
@@ -130,8 +141,6 @@ private fun MovieDetailContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Storyline
                 Text(
                     "Storyline",
                     style = MaterialTheme.typography.titleLarge,
@@ -143,8 +152,33 @@ private fun MovieDetailContent(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                // add cast, director and shows here later
+                // cast and crew
+                Spacer(modifier = Modifier.height(24.dp))
+                Text("Cast", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(cast) { castMember ->
+                        CreditChip(name = castMember.name, imageUrl = castMember.profilePath)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+                Text("Crew", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(crew) { crewMember ->
+                        CreditChip(
+                            name = crewMember.name,
+                            job = crewMember.job,
+                            imageUrl = crewMember.profilePath
+                        )
+                    }
+                }
             }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

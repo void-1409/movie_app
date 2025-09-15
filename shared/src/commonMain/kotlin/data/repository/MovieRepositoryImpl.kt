@@ -1,6 +1,7 @@
 package data.repository
 
 import data.remote.ApiService
+import data.remote.dto.MovieCreditsDto
 import data.remote.dto.MovieDetailDto
 import data.remote.dto.MovieResultDto
 import domain.model.Movie
@@ -27,6 +28,10 @@ class MovieRepositoryImpl(
 
     override suspend fun getMovieById(movieId: Int): MovieDetailDto {
         return apiService.getMovieById(movieId)
+    }
+
+    override suspend fun getMovieCredits(movieId: Int): MovieCreditsDto {
+        return apiService.getMovieCredits(movieId)
     }
 
     // mapper function to convert the raw DTO to our clean domain model
