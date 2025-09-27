@@ -39,10 +39,13 @@ fun RootScreen(
             when (child) {
                 is RootComponent.Child.Home -> HomeScreen(
                     viewModel = child.viewModel,
-                    onNavigateToMovies = { component.onTabClick(MainNavTab.MOVIES) },
+                    onNavigateToMovies = { initialTab -> component.onNavigateToMovies(initialTab) },
                     onMovieClick = { movieId -> component.onMovieClick(movieId) }
                 )
-                is RootComponent.Child.Movies -> MoviesScreen()
+                is RootComponent.Child.Movies -> MoviesScreen(
+                    child.viewModel,
+                    onMovieClick = { movieId -> component.onMovieClick(movieId) }
+                )
                 is RootComponent.Child.Tickets -> TicketsScreen()
                 is RootComponent.Child.Profile -> ProfileScreen()
                 is RootComponent.Child.Detail -> MovieDetailScreen(

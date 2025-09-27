@@ -30,11 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import domain.model.Movie
 import presentation.components.MovieCard
+import presentation.screens.movies.MovieTab
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onNavigateToMovies: () -> Unit,
+    onNavigateToMovies: (MovieTab) -> Unit,
     onMovieClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -87,7 +88,7 @@ fun HomeScreen(
         item {
             SectionHeader(
                 "Now Playing",
-                onArrowClick = onNavigateToMovies
+                onArrowClick = { onNavigateToMovies(MovieTab.NOW_PLAYING) }
             )
             Spacer(modifier = Modifier.height(8.dp))
             LazyRow(
@@ -107,7 +108,7 @@ fun HomeScreen(
         item {
             SectionHeader(
                 title = "Upcoming Movies",
-                onArrowClick = onNavigateToMovies
+                onArrowClick = { onNavigateToMovies(MovieTab.COMING_SOON) }
             )
             Spacer(modifier = Modifier.height(8.dp))
             LazyRow(

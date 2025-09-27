@@ -16,6 +16,8 @@ import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
+import presentation.screens.movies.MovieTab
+import presentation.screens.movies.MoviesViewModel
 
 class RootComponent(
     componentContext: ComponentContext
@@ -23,6 +25,7 @@ class RootComponent(
 
     private val navigation = StackNavigation<Config>()
     private val homeViewModel: HomeViewModel by inject()
+    private val moviesViewModel: MoviesViewModel by inject()
 
     val childStack: Value<ChildStack<*, Child>> =
         childStack(
@@ -63,7 +66,7 @@ class RootComponent(
                 Child.Detail(viewModel)
             }
             Config.Home -> Child.Home(homeViewModel)
-            Config.Movies -> Child.Movies
+            Config.Movies -> Child.Movies(moviesViewModel)
             Config.Tickets -> Child.Tickets
             Config.Profile -> Child.Profile
         }
@@ -84,7 +87,7 @@ class RootComponent(
 
     sealed class Child {
         data class Home(val viewModel: HomeViewModel) : Child()
-        data object Movies : Child()
+        data class Movies(val viewModel: MoviesViewModel) : Child()
         data object Tickets : Child()
         data object Profile : Child()
         data class Detail(val viewModel: MovieDetailViewModel) : Child()
@@ -106,6 +109,12 @@ class RootComponent(
 
     fun onBackClicked() {
         navigation.pop()
+    }
+
+    // function for handling navigation from HomeScreen arrows
+    fun onNavigateToMovies(initialTab: MovieTab) {
+        moviesViewModel.onTabSelected(initialTab)   // set tab in viewmodel
+        navigation.replaceAll(Config.Movies)        // navigate to movies screen
     }
 }
 
