@@ -10,6 +10,7 @@ import org.koin.dsl.module
 import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
 import presentation.screens.movies.MoviesViewModel
+import presentation.screens.shows.ShowsViewModel
 
 val appModule = module {
     // provide a singleton instance of our HttpClient
@@ -25,6 +26,8 @@ val appModule = module {
     factory { (movieId: Int) -> MovieDetailViewModel(movieId = movieId, movieRepository = get()) }
 
     factory { MoviesViewModel(get()) }
+
+    factory { (movieTitle: String) -> ShowsViewModel(movieTitle = movieTitle) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

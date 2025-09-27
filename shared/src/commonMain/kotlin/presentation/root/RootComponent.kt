@@ -10,6 +10,7 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -18,6 +19,7 @@ import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
 import presentation.screens.movies.MovieTab
 import presentation.screens.movies.MoviesViewModel
+import presentation.screens.shows.ShowsViewModel
 
 class RootComponent(
     componentContext: ComponentContext
@@ -65,6 +67,13 @@ class RootComponent(
                 val viewModel: MovieDetailViewModel by inject { parametersOf(config.movieId) }
                 Child.Detail(viewModel)
             }
+            is Config.Shows -> {
+                val viewModel: ShowsViewModel by inject { parametersOf(config.movieTitle) }
+                Child.Shows(viewModel)
+            }
+            is Config.SeatSelection -> Child.SeatSelection(
+                config.movieTitle, config.cinema, config.date, config.time
+            )
             Config.Home -> Child.Home(homeViewModel)
             Config.Movies -> Child.Movies(moviesViewModel)
             Config.Tickets -> Child.Tickets
@@ -91,6 +100,13 @@ class RootComponent(
         data object Tickets : Child()
         data object Profile : Child()
         data class Detail(val viewModel: MovieDetailViewModel) : Child()
+        data class Shows(val viewModel: ShowsViewModel) : Child()
+        data class SeatSelection(
+            val movieTitle: String,
+            val cinema: String,
+            val date: LocalDate,
+            val time: String
+        ) : Child()
     }
 
     @Serializable // Use @Serializable on the parent sealed interface
@@ -105,6 +121,15 @@ class RootComponent(
         data object Profile : Config
         @Serializable
         data class Detail(val movieId: Int) : Config
+        @Serializable
+        data class Shows(val movieTitle: String) : Config
+        @Serializable
+        data class SeatSelection(
+            val movieTitle: String,
+            val cinema: String,
+            val date: LocalDate,
+            val time: String
+        ) : Config
     }
 
     fun onBackClicked() {
@@ -115,6 +140,16 @@ class RootComponent(
     fun onNavigateToMovies(initialTab: MovieTab) {
         moviesViewModel.onTabSelected(initialTab)   // set tab in viewmodel
         navigation.replaceAll(Config.Movies)        // navigate to movies screen
+    }
+
+    @OptIn(DelicateDecomposeApi::class)
+    fun onNavigateToShows(movieTitle: String) {
+        navigation.push(Config.Shows(movieTitle = movieTitle))
+    }
+
+    @OptIn(DelicateDecomposeApi::class)
+    fun onNavigateToSeatSelection(movieTitle: String, cinema: String, date: LocalDate, time: String) {
+        navigation.push(Config.SeatSelection(movieTitle, cinema, date, time))
     }
 }
 

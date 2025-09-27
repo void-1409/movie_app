@@ -10,6 +10,8 @@ import presentation.screens.detail.MovieDetailScreen
 import presentation.screens.home.HomeScreen
 import presentation.screens.movies.MoviesScreen
 import presentation.screens.profile.ProfileScreen
+import presentation.screens.seats.SeatSelectionScreen
+import presentation.screens.shows.ShowsScreen
 import presentation.screens.tickets.TicketsScreen
 
 @Composable
@@ -50,7 +52,23 @@ fun RootScreen(
                 is RootComponent.Child.Profile -> ProfileScreen()
                 is RootComponent.Child.Detail -> MovieDetailScreen(
                     viewModel = child.viewModel,
-                    onBackClick = { component.onBackClicked() }
+                    onBackClick = { component.onBackClicked() },
+                    onBookNowClick = { movieTitle -> component.onNavigateToShows(movieTitle) }
+                )
+                is RootComponent.Child.Shows -> ShowsScreen(
+                    viewModel = child.viewModel,
+                    onBackClick = { component.onBackClicked() },
+                    onShowtimeClick = { cinemaName, time ->
+                        component.onNavigateToSeatSelection(
+                            movieTitle = child.viewModel.uiState.value.movieTitle,
+                            cinema = cinemaName,
+                            date = child.viewModel.uiState.value.selectedDate!!,
+                            time = time
+                        )
+                    }
+                )
+                is RootComponent.Child.SeatSelection -> SeatSelectionScreen(
+                    child.movieTitle, child.cinema, child.date, child.time
                 )
             }
         }

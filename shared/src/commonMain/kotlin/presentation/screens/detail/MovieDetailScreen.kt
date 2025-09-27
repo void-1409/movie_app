@@ -42,7 +42,8 @@ import presentation.components.CreditChip
 @Composable
 fun MovieDetailScreen(
     viewModel: MovieDetailViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onBookNowClick: (movieTitle: String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -51,7 +52,7 @@ fun MovieDetailScreen(
             // show button only if movie has loaded
             if (uiState.movie != null) {
                 Button(
-                    onClick = { /* TODO: Handle Booking */ },
+                    onClick = { onBookNowClick(uiState.movie!!.title) },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -87,7 +88,8 @@ fun MovieDetailScreen(
                         movie = uiState.movie!!,
                         cast = uiState.cast,
                         crew = uiState.crew,
-                        onBackClick = onBackClick
+                        onBackClick = onBackClick,
+                        onBookNowClick = { onBookNowClick(uiState.movie!!.title) }
                     )
                 }
             }
@@ -100,7 +102,8 @@ private fun MovieDetailContent(
     movie: MovieDetailDto,
     cast: List<CastDto>,
     crew: List<CrewDto>,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onBookNowClick: () -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         // Back Arrow and Title
