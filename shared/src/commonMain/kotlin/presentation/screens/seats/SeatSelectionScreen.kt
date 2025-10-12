@@ -135,6 +135,7 @@ private fun SeatView(seat: Seat, onClick: () -> Unit) {
     }
     val contentColor = when (seat.status) {
         SeatStatus.RESERVED -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        SeatStatus.SELECTED -> MaterialTheme.colorScheme.onPrimary.copy()
         else -> MaterialTheme.colorScheme.onSurface
     }
 

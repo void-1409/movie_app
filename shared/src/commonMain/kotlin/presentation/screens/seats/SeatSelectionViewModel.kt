@@ -27,6 +27,10 @@ class SeatSelectionViewModel : ViewModel() {
         }
 
         _uiState.update { currentState ->
+            // select up to 10 seats
+            if (currentState.selectedSeats.size >= 10 && seat.status == SeatStatus.AVAILABLE) {
+                return@update currentState  // exit without making changes
+            }
             val updateSeats = currentState.seats.map {
                 if (it.id == seat.id) {
                     it.copy(status = if (seat.status == SeatStatus.AVAILABLE) SeatStatus.SELECTED else SeatStatus.AVAILABLE)
