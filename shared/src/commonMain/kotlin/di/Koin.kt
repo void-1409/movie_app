@@ -10,6 +10,7 @@ import org.koin.dsl.module
 import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
 import presentation.screens.movies.MoviesViewModel
+import presentation.screens.seats.SeatSelectionViewModel
 import presentation.screens.shows.ShowsViewModel
 
 val appModule = module {
@@ -28,6 +29,8 @@ val appModule = module {
     factory { MoviesViewModel(get()) }
 
     factory { (movieTitle: String) -> ShowsViewModel(movieTitle = movieTitle) }
+
+    factory { SeatSelectionViewModel() }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

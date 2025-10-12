@@ -68,7 +68,9 @@ fun RootScreen(
                     }
                 )
                 is RootComponent.Child.SeatSelection -> SeatSelectionScreen(
-                    child.movieTitle, child.cinema, child.date, child.time
+                    viewModel = child.viewModel,
+                    movieTitle = child.movieTitle,
+                    onBackClick = { component.onBackClicked() }
                 )
             }
         }

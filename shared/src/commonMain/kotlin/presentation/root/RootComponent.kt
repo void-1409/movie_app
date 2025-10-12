@@ -19,6 +19,7 @@ import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
 import presentation.screens.movies.MovieTab
 import presentation.screens.movies.MoviesViewModel
+import presentation.screens.seats.SeatSelectionViewModel
 import presentation.screens.shows.ShowsViewModel
 
 class RootComponent(
@@ -71,9 +72,16 @@ class RootComponent(
                 val viewModel: ShowsViewModel by inject { parametersOf(config.movieTitle) }
                 Child.Shows(viewModel)
             }
-            is Config.SeatSelection -> Child.SeatSelection(
-                config.movieTitle, config.cinema, config.date, config.time
-            )
+            is Config.SeatSelection -> {
+                val viewModel: SeatSelectionViewModel by inject()
+                Child.SeatSelection(
+                    viewModel = viewModel,
+                    movieTitle = config.movieTitle,
+                    cinema = config.cinema,
+                    date = config.date,
+                    time = config.time
+                )
+            }
             Config.Home -> Child.Home(homeViewModel)
             Config.Movies -> Child.Movies(moviesViewModel)
             Config.Tickets -> Child.Tickets
@@ -102,6 +110,7 @@ class RootComponent(
         data class Detail(val viewModel: MovieDetailViewModel) : Child()
         data class Shows(val viewModel: ShowsViewModel) : Child()
         data class SeatSelection(
+            val viewModel: SeatSelectionViewModel,
             val movieTitle: String,
             val cinema: String,
             val date: LocalDate,
