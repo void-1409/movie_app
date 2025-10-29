@@ -4,6 +4,9 @@ import data.remote.ApiServiceImpl
 import data.remote.httpClient
 import data.repository.MovieRepositoryImpl
 import domain.repository.MovieRepository
+import domain.repository.TicketRepository
+import domain.repository.TicketRepositoryImpl
+import kotlinx.datetime.LocalDate
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -21,6 +24,8 @@ val appModule = module {
     // provide a singleton instance of MovieRepositoryImpl, giving it to ApiService
     single<MovieRepository> { MovieRepositoryImpl(get()) }
 
+    single<TicketRepository> { TicketRepositoryImpl }
+
     // provide a new instance of HomeViewModel every time its requested
     factory { HomeViewModel(get()) }
 
@@ -30,7 +35,15 @@ val appModule = module {
 
     factory { (movieTitle: String) -> ShowsViewModel(movieTitle = movieTitle) }
 
-    factory { SeatSelectionViewModel() }
+    factory { (movieTitle: String, cinema: String, date: LocalDate, time: String) ->
+        SeatSelectionViewModel(
+            movieTitle = movieTitle,
+            cinema = cinema,
+            date = date,
+            time = time,
+            ticketRepository = get()
+        )
+    }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

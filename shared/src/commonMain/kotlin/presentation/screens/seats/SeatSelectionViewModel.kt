@@ -1,16 +1,34 @@
 package presentation.screens.seats
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import data.dummy.generateDummySeatLayout
 import domain.model.Seat
 import domain.model.SeatStatus
+import domain.model.Ticket
+import domain.repository.TicketRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-class SeatSelectionViewModel : ViewModel() {
+class SeatSelectionViewModel(
+    private val movieTitle: String,
+    private val cinema: String,
+    private val date: LocalDate,
+    private val time: String,
+    private val ticketRepository: TicketRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SeatSelectionState())
     val uiState = _uiState.asStateFlow()
+
+    private val _navigationEvent = MutableSharedFlow<String>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
 
     companion object {
         private const val PRICE_PER_SEAT = 12.0f    // fixed seat price for now
@@ -47,6 +65,28 @@ class SeatSelectionViewModel : ViewModel() {
                 selectedSeats = selectedSeats,
                 totalPrice = selectedSeats.size * PRICE_PER_SEAT
             )
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    fun onBuyTicketsClicked() {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            if (currentState.selectedSeats.isEmpty()) return@launch
+
+            val newTicket = Ticket(
+                id = Uuid.random().toString(),
+                movieTitle = movieTitle,
+                cinemaName = cinema,
+                date = date,
+                time = time,
+                selectedSeats = currentState.selectedSeats,
+                totalPrice = currentState.totalPrice,
+            )
+            ticketRepository.addTicket(newTicket)
+
+            // emit the id to trigger navigation
+            _navigationEvent.emit(newTicket.id)
         }
     }
 }

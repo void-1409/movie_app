@@ -73,15 +73,15 @@ class RootComponent(
                 Child.Shows(viewModel)
             }
             is Config.SeatSelection -> {
-                val viewModel: SeatSelectionViewModel by inject()
+                val viewModel: SeatSelectionViewModel by inject{
+                    parametersOf(config.movieTitle, config.cinema, config.date, config.time)
+                }
                 Child.SeatSelection(
                     viewModel = viewModel,
-                    movieTitle = config.movieTitle,
-                    cinema = config.cinema,
-                    date = config.date,
-                    time = config.time
+                    movieTitle = config.movieTitle
                 )
             }
+            is Config.Confirmation -> Child.Confirmation(config.ticketId)
             Config.Home -> Child.Home(homeViewModel)
             Config.Movies -> Child.Movies(moviesViewModel)
             Config.Tickets -> Child.Tickets
@@ -111,11 +111,9 @@ class RootComponent(
         data class Shows(val viewModel: ShowsViewModel) : Child()
         data class SeatSelection(
             val viewModel: SeatSelectionViewModel,
-            val movieTitle: String,
-            val cinema: String,
-            val date: LocalDate,
-            val time: String
+            val movieTitle: String
         ) : Child()
+        data class Confirmation(val ticketId: String) : Child()
     }
 
     @Serializable // Use @Serializable on the parent sealed interface
@@ -139,6 +137,8 @@ class RootComponent(
             val date: LocalDate,
             val time: String
         ) : Config
+        @Serializable
+        data class Confirmation(val ticketId: String) : Config
     }
 
     fun onBackClicked() {
@@ -159,6 +159,14 @@ class RootComponent(
     @OptIn(DelicateDecomposeApi::class)
     fun onNavigateToSeatSelection(movieTitle: String, cinema: String, date: LocalDate, time: String) {
         navigation.push(Config.SeatSelection(movieTitle, cinema, date, time))
+    }
+
+    fun onNavigateToConfirmation(ticketId: String) {
+        navigation.push(Config.Confirmation(ticketId = ticketId))
+    }
+
+    fun onNavigateToTickets() {
+        navigation.replaceAll(Config.Tickets)
     }
 }
 

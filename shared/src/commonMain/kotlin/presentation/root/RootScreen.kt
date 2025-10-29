@@ -6,6 +6,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import presentation.components.BottomNavBar
+import presentation.screens.confirmation.ConfirmationScreen
 import presentation.screens.detail.MovieDetailScreen
 import presentation.screens.home.HomeScreen
 import presentation.screens.movies.MoviesScreen
@@ -70,7 +71,12 @@ fun RootScreen(
                 is RootComponent.Child.SeatSelection -> SeatSelectionScreen(
                     viewModel = child.viewModel,
                     movieTitle = child.movieTitle,
-                    onBackClick = { component.onBackClicked() }
+                    onBackClick = { component.onBackClicked() },
+                    onNavigateToConfirmation = { ticketId -> component.onNavigateToConfirmation(ticketId) }
+                )
+                is RootComponent.Child.Confirmation -> ConfirmationScreen(
+                    ticketId = child.ticketId,
+                    onViewBookingClick = { component.onNavigateToTickets() }
                 )
             }
         }

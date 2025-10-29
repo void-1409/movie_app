@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -50,8 +51,15 @@ import domain.model.SeatStatus
 fun SeatSelectionScreen(
     viewModel: SeatSelectionViewModel,
     movieTitle: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onNavigateToConfirmation: (ticketId: String) -> Unit
 ) {
+    // listen for navigation events from viewmodel
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { ticketId ->
+            onNavigateToConfirmation(ticketId)
+        }
+    }
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
@@ -59,7 +67,7 @@ fun SeatSelectionScreen(
         bottomBar = {
             BottomBar(
                 price = uiState.totalPrice,
-                onBuyTicketsClick = { /* TODO: Navigate to payment page */ }
+                onBuyTicketsClick = { viewModel.onBuyTicketsClicked() }
             )
         }
     ) { paddingValues ->
