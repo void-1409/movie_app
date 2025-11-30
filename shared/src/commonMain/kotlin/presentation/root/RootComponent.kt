@@ -21,6 +21,7 @@ import presentation.screens.movies.MovieTab
 import presentation.screens.movies.MoviesViewModel
 import presentation.screens.seats.SeatSelectionViewModel
 import presentation.screens.shows.ShowsViewModel
+import presentation.screens.tickets.TicketsViewModel
 
 class RootComponent(
     componentContext: ComponentContext
@@ -82,9 +83,12 @@ class RootComponent(
                 )
             }
             is Config.Confirmation -> Child.Confirmation(config.ticketId)
+            is Config.Tickets -> {
+                val viewModel: TicketsViewModel by inject()
+                Child.Tickets(viewModel)
+            }
             Config.Home -> Child.Home(homeViewModel)
             Config.Movies -> Child.Movies(moviesViewModel)
-            Config.Tickets -> Child.Tickets
             Config.Profile -> Child.Profile
         }
 
@@ -105,7 +109,7 @@ class RootComponent(
     sealed class Child {
         data class Home(val viewModel: HomeViewModel) : Child()
         data class Movies(val viewModel: MoviesViewModel) : Child()
-        data object Tickets : Child()
+        data class Tickets(val viewModel: TicketsViewModel) : Child()
         data object Profile : Child()
         data class Detail(val viewModel: MovieDetailViewModel) : Child()
         data class Shows(val viewModel: ShowsViewModel) : Child()

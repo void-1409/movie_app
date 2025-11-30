@@ -49,7 +49,7 @@ fun RootScreen(
                     child.viewModel,
                     onMovieClick = { movieId -> component.onMovieClick(movieId) }
                 )
-                is RootComponent.Child.Tickets -> TicketsScreen()
+                is RootComponent.Child.Tickets -> TicketsScreen(viewModel = child.viewModel)
                 is RootComponent.Child.Profile -> ProfileScreen()
                 is RootComponent.Child.Detail -> MovieDetailScreen(
                     viewModel = child.viewModel,

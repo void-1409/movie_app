@@ -1,5 +1,6 @@
 package di
 
+import androidx.lifecycle.viewmodel.compose.viewModel
 import data.remote.ApiServiceImpl
 import data.remote.httpClient
 import data.repository.MovieRepositoryImpl
@@ -15,6 +16,7 @@ import presentation.screens.home.HomeViewModel
 import presentation.screens.movies.MoviesViewModel
 import presentation.screens.seats.SeatSelectionViewModel
 import presentation.screens.shows.ShowsViewModel
+import presentation.screens.tickets.TicketsViewModel
 
 val appModule = module {
     // provide a singleton instance of our HttpClient
@@ -44,6 +46,8 @@ val appModule = module {
             ticketRepository = get()
         )
     }
+
+    factory { TicketsViewModel(get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
