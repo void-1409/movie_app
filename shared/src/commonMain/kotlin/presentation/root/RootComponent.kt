@@ -10,6 +10,7 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
+import domain.model.Ticket
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
@@ -22,6 +23,8 @@ import presentation.screens.movies.MoviesViewModel
 import presentation.screens.seats.SeatSelectionViewModel
 import presentation.screens.shows.ShowsViewModel
 import presentation.screens.tickets.TicketsViewModel
+import domain.repository.TicketRepository
+import org.koin.core.component.get
 
 class RootComponent(
     componentContext: ComponentContext
@@ -71,14 +74,15 @@ class RootComponent(
             }
             is Config.Shows -> {
                 val viewModel: ShowsViewModel by inject { parametersOf(config.movieTitle) }
-                Child.Shows(viewModel)
+                Child.Shows(viewModel, config.movieId)
             }
             is Config.SeatSelection -> {
                 val viewModel: SeatSelectionViewModel by inject{
-                    parametersOf(config.movieTitle, config.cinema, config.date, config.time)
+                    parametersOf(config.movieId, config.cinema, LocalDate.parse(config.date), config.time)
                 }
                 Child.SeatSelection(
                     viewModel = viewModel,
+                    movieId = config.movieId,
                     movieTitle = config.movieTitle
                 )
             }
@@ -90,6 +94,17 @@ class RootComponent(
             Config.Home -> Child.Home(homeViewModel)
             Config.Movies -> Child.Movies(moviesViewModel)
             Config.Profile -> Child.Profile
+            is Config.TicketDetail -> {
+                val ticketRepository: TicketRepository = get()
+
+                val ticket = ticketRepository.getTickets().find { it.id == config.ticketId }
+                if (ticket != null) {
+                    Child.TicketDetail(ticket)
+                } else {
+                    val viewModel: TicketsViewModel by inject()
+                    Child.Tickets(viewModel)
+                }
+            }
         }
 
     fun onTabClick(tab: MainNavTab) {
@@ -112,12 +127,14 @@ class RootComponent(
         data class Tickets(val viewModel: TicketsViewModel) : Child()
         data object Profile : Child()
         data class Detail(val viewModel: MovieDetailViewModel) : Child()
-        data class Shows(val viewModel: ShowsViewModel) : Child()
+        data class Shows(val viewModel: ShowsViewModel, val movieId: Int) : Child()
         data class SeatSelection(
             val viewModel: SeatSelectionViewModel,
+            val movieId: Int,
             val movieTitle: String
         ) : Child()
         data class Confirmation(val ticketId: String) : Child()
+        data class TicketDetail(val ticket: Ticket) : Child()
     }
 
     @Serializable // Use @Serializable on the parent sealed interface
@@ -133,16 +150,19 @@ class RootComponent(
         @Serializable
         data class Detail(val movieId: Int) : Config
         @Serializable
-        data class Shows(val movieTitle: String) : Config
+        data class Shows(val movieId: Int, val movieTitle: String) : Config
         @Serializable
         data class SeatSelection(
+            val movieId: Int,
             val movieTitle: String,
             val cinema: String,
-            val date: LocalDate,
+            val date: String,
             val time: String
         ) : Config
         @Serializable
         data class Confirmation(val ticketId: String) : Config
+        @Serializable
+        data class TicketDetail(val ticketId: String) : Config
     }
 
     fun onBackClicked() {
@@ -156,13 +176,13 @@ class RootComponent(
     }
 
     @OptIn(DelicateDecomposeApi::class)
-    fun onNavigateToShows(movieTitle: String) {
-        navigation.push(Config.Shows(movieTitle = movieTitle))
+    fun onNavigateToShows(movieId: Int, movieTitle: String) {
+        navigation.push(Config.Shows(movieId, movieTitle))
     }
 
     @OptIn(DelicateDecomposeApi::class)
-    fun onNavigateToSeatSelection(movieTitle: String, cinema: String, date: LocalDate, time: String) {
-        navigation.push(Config.SeatSelection(movieTitle, cinema, date, time))
+    fun onNavigateToSeatSelection(movieId: Int, movieTitle: String, cinema: String, date: LocalDate, time: String) {
+        navigation.push(Config.SeatSelection(movieId, movieTitle, cinema, date.toString(), time))
     }
 
     fun onNavigateToConfirmation(ticketId: String) {
@@ -171,6 +191,10 @@ class RootComponent(
 
     fun onNavigateToTickets() {
         navigation.replaceAll(Config.Tickets)
+    }
+
+    fun onNavigateToTicketDetail(ticketId: String) {
+        navigation.push(Config.TicketDetail(ticketId))
     }
 }
 

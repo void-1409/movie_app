@@ -13,6 +13,7 @@ import presentation.screens.movies.MoviesScreen
 import presentation.screens.profile.ProfileScreen
 import presentation.screens.seats.SeatSelectionScreen
 import presentation.screens.shows.ShowsScreen
+import presentation.screens.tickets.TicketDetailScreen
 import presentation.screens.tickets.TicketsScreen
 
 @Composable
@@ -49,18 +50,28 @@ fun RootScreen(
                     child.viewModel,
                     onMovieClick = { movieId -> component.onMovieClick(movieId) }
                 )
-                is RootComponent.Child.Tickets -> TicketsScreen(viewModel = child.viewModel)
+                is RootComponent.Child.Tickets -> TicketsScreen(
+                    viewModel = child.viewModel,
+                    onTicketClick = { ticketId -> component.onNavigateToTicketDetail(ticketId) }
+                )
+                is RootComponent.Child.TicketDetail -> TicketDetailScreen(
+                    ticket = child.ticket,
+                    onBackClick = { component.onBackClicked() }
+                )
                 is RootComponent.Child.Profile -> ProfileScreen()
                 is RootComponent.Child.Detail -> MovieDetailScreen(
                     viewModel = child.viewModel,
                     onBackClick = { component.onBackClicked() },
-                    onBookNowClick = { movieTitle -> component.onNavigateToShows(movieTitle) }
+                    onBookNowClick = { movieId, movieTitle ->
+                        component.onNavigateToShows(movieId, movieTitle)
+                    }
                 )
                 is RootComponent.Child.Shows -> ShowsScreen(
                     viewModel = child.viewModel,
                     onBackClick = { component.onBackClicked() },
                     onShowtimeClick = { cinemaName, time ->
                         component.onNavigateToSeatSelection(
+                            movieId = child.movieId,
                             movieTitle = child.viewModel.uiState.value.movieTitle,
                             cinema = cinemaName,
                             date = child.viewModel.uiState.value.selectedDate!!,

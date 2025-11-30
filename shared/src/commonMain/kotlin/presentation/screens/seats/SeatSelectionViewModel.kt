@@ -6,6 +6,7 @@ import data.dummy.generateDummySeatLayout
 import domain.model.Seat
 import domain.model.SeatStatus
 import domain.model.Ticket
+import domain.repository.MovieRepository
 import domain.repository.TicketRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +19,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class SeatSelectionViewModel(
-    private val movieTitle: String,
+    private val movieId: Int,
     private val cinema: String,
     private val date: LocalDate,
     private val time: String,
-    private val ticketRepository: TicketRepository
+    private val ticketRepository: TicketRepository,
+    private val movieRepository: MovieRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SeatSelectionState())
     val uiState = _uiState.asStateFlow()
@@ -74,10 +76,22 @@ class SeatSelectionViewModel(
             val currentState = _uiState.value
             if (currentState.selectedSeats.isEmpty()) return@launch
 
+            val movie = movieRepository.getMovieById(movieId)
+
+            // format duration
+            val hours = movie.runtime?.div(60)
+            val minutes = movie.runtime?.rem(60)
+            val formattedDuration = "${hours}h ${minutes}m"
+            val formattedGenre = movie.genres.joinToString { it.name }
+
             val newTicket = Ticket(
                 id = Uuid.random().toString(),
-                movieTitle = movieTitle,
+                movieTitle = movie.title,
+                posterUrl = movie.posterPath.toString(),
+                genre = formattedGenre,
+                duration = formattedDuration,
                 cinemaName = cinema,
+                location = "Deggendorf",
                 date = date,
                 time = time,
                 selectedSeats = currentState.selectedSeats,

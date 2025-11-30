@@ -37,13 +37,14 @@ val appModule = module {
 
     factory { (movieTitle: String) -> ShowsViewModel(movieTitle = movieTitle) }
 
-    factory { (movieTitle: String, cinema: String, date: LocalDate, time: String) ->
+    factory { (movieId: Int, cinema: String, date: LocalDate, time: String) ->
         SeatSelectionViewModel(
-            movieTitle = movieTitle,
+            movieId = movieId,
             cinema = cinema,
             date = date,
             time = time,
-            ticketRepository = get()
+            ticketRepository = get(),
+            movieRepository = get()
         )
     }
 

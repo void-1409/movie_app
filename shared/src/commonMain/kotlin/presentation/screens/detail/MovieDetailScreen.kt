@@ -43,7 +43,7 @@ import presentation.components.CreditChip
 fun MovieDetailScreen(
     viewModel: MovieDetailViewModel,
     onBackClick: () -> Unit,
-    onBookNowClick: (movieTitle: String) -> Unit
+    onBookNowClick: (Int, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -52,7 +52,7 @@ fun MovieDetailScreen(
             // show button only if movie has loaded
             if (uiState.movie != null) {
                 Button(
-                    onClick = { onBookNowClick(uiState.movie!!.title) },
+                    onClick = { onBookNowClick(uiState.movie!!.id, uiState.movie!!.title) },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -89,7 +89,7 @@ fun MovieDetailScreen(
                         cast = uiState.cast,
                         crew = uiState.crew,
                         onBackClick = onBackClick,
-                        onBookNowClick = { onBookNowClick(uiState.movie!!.title) }
+                        onBookNowClick = { onBookNowClick(uiState.movie!!.id, uiState.movie!!.title) }
                     )
                 }
             }
