@@ -1,6 +1,7 @@
 package presentation.screens.user
 
 import androidx.lifecycle.ViewModel
+import domain.manager.LanguageManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,12 +12,18 @@ data class UserState(
     val isFaceIdEnabled: Boolean = true
 )
 
-class UserViewModel : ViewModel() {
+class UserViewModel(
+    private val languageManager: LanguageManager
+) : ViewModel() {
     private val _uiState = MutableStateFlow(UserState())
     val uiState = _uiState.asStateFlow()
 
     fun toggleFaceId(isEnabled: Boolean) {
         _uiState.update { it.copy(isFaceIdEnabled = isEnabled) }
+    }
+
+    fun onToggleLanguage() {
+        languageManager.toggleLanguage()
     }
 
     fun onSignOut() {

@@ -1,9 +1,9 @@
 package di
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import data.remote.ApiServiceImpl
 import data.remote.httpClient
 import data.repository.MovieRepositoryImpl
+import domain.manager.LanguageManager
 import domain.repository.MovieRepository
 import domain.repository.TicketRepository
 import domain.repository.TicketRepositoryImpl
@@ -29,6 +29,8 @@ val appModule = module {
 
     single<TicketRepository> { TicketRepositoryImpl }
 
+    single { LanguageManager() }
+
     // provide a new instance of HomeViewModel every time its requested
     factory { HomeViewModel(get()) }
 
@@ -51,7 +53,7 @@ val appModule = module {
 
     factory { TicketsViewModel(get()) }
 
-    factory { UserViewModel() }
+    factory { UserViewModel(get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

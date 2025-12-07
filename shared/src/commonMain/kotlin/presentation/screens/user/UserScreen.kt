@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import presentation.theme.LocalStrings
 
 @Composable
 fun UserScreen(
@@ -52,6 +53,8 @@ fun UserScreen(
     onEditProfileClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    val strings = LocalStrings.current
 
     Scaffold(
         topBar = { Spacer(Modifier.height(40.dp)) },
@@ -77,7 +80,7 @@ fun UserScreen(
 
             UserOptionItem(
                 icon = Icons.Default.History,
-                title = "Booking History",
+                title = strings.bookingHistory,
                 onClick = { /* TODO */}
             )
 
@@ -85,15 +88,15 @@ fun UserScreen(
 
             UserOptionItem(
                 icon = Icons.Default.Language,
-                title = "Change Language",
-                onClick = { /* TODO */ }
+                title = strings.changeLanguage,
+                onClick = { viewModel.onToggleLanguage() }
             )
 
             Spacer(Modifier.height(12.dp))
 
             UserOptionItem(
                 icon = Icons.Default.CreditCard,
-                title = "Payment Methods",
+                title = strings.paymentMethods,
                 onClick = { /* TODO */ }
             )
 
@@ -101,7 +104,7 @@ fun UserScreen(
 
             UserToggleItem(
                 icon = Icons.Default.Face,
-                title = "Face ID / Touch ID",
+                title = strings.faceId,
                 isChecked = uiState.isFaceIdEnabled,
                 onToggle = { viewModel.toggleFaceId(it) }
             )
@@ -110,7 +113,7 @@ fun UserScreen(
 
             UserOptionItem(
                 icon = Icons.Default.HelpOutline,
-                title = "Help Centre",
+                title = strings.helpCenter,
                 onClick = { /* TODO */}
             )
 
@@ -124,7 +127,7 @@ fun UserScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    "Sign Out",
+                    text = strings.signOut,
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
@@ -161,7 +164,7 @@ fun UserHeader(userName: String, imageUrl: String, onEditClick: () -> Unit) {
 
         Column {
             Text(
-                "Hi, $userName",
+                "${LocalStrings.current.greeting}, $userName",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

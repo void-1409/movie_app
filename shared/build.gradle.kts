@@ -45,6 +45,7 @@ kotlin {
             implementation(libs.decompose.extensions.compose)
             // Koin for Dependency Injection
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
             // Image Loading from URL
             implementation(libs.kamel.image)
             // Date and Time
