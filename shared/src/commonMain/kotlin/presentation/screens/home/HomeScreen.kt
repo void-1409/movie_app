@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import domain.model.Movie
 import presentation.components.MovieCard
 import presentation.screens.movies.MovieTab
+import presentation.theme.LocalStrings
 
 @Composable
 fun HomeScreen(
@@ -40,6 +41,9 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    // string for changing languages
+    val strings = LocalStrings.current
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -47,7 +51,7 @@ fun HomeScreen(
     ) {
         // --- Trending Section ---
         item {
-            SectionHeader("Trending")
+            SectionHeader(strings.trending)
             Spacer(modifier = Modifier.height(8.dp))
 
             // Display movies
@@ -87,7 +91,7 @@ fun HomeScreen(
         // --- Explore Movies Section
         item {
             SectionHeader(
-                "Now Playing",
+                strings.nowPlaying,
                 onArrowClick = { onNavigateToMovies(MovieTab.NOW_PLAYING) }
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -107,7 +111,7 @@ fun HomeScreen(
         // --- Upcoming Movies Section
         item {
             SectionHeader(
-                title = "Upcoming Movies",
+                title = strings.upcomingMovies,
                 onArrowClick = { onNavigateToMovies(MovieTab.COMING_SOON) }
             )
             Spacer(modifier = Modifier.height(8.dp))

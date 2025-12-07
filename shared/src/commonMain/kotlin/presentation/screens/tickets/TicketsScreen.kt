@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import domain.model.Ticket
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import presentation.theme.LocalStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +57,7 @@ fun TicketsScreen(
     onTicketClick: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val strings = LocalStrings.current
 
     // reload tickets everytime this screen appears
     LaunchedEffect(Unit) {
@@ -65,7 +67,7 @@ fun TicketsScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("My Tickets", fontWeight = FontWeight.Bold) }
+                title = { Text(strings.myTickets, fontWeight = FontWeight.Bold) }
             )
         }
     ) { paddingValues ->
@@ -88,7 +90,7 @@ fun TicketsScreen(
                 // section: up next
                 if (upNextTicket != null) {
                     item {
-                        Text("Up Next", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                        Text(strings.upNext, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.height(8.dp))
                         TicketListCard(ticket = upNextTicket, isHighlighted = true, onClick = { onTicketClick(upNextTicket.id) })
                     }
@@ -98,7 +100,7 @@ fun TicketsScreen(
                 if (laterTickets.isNotEmpty()) {
                     item {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Later", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(strings.later, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     items(laterTickets) { ticket ->
@@ -192,6 +194,6 @@ fun EmptyTicketsView(modifier: Modifier = Modifier) {
             modifier = Modifier.size(64.dp).padding(bottom = 16.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Text("No tickets yet", style = MaterialTheme.typography.titleMedium)
+        Text(LocalStrings.current.noTickets, style = MaterialTheme.typography.titleMedium)
     }
 }

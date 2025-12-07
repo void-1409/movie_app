@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.model.Seat
 import domain.model.SeatStatus
+import presentation.theme.LocalStrings
 
 @Composable
 fun SeatSelectionScreen(
@@ -170,14 +171,15 @@ private fun SeatView(seat: Seat, onClick: () -> Unit) {
 
 @Composable
 private fun SeatLegend() {
+    val strings = LocalStrings.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        LegendItem(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), text = "Available")
-        LegendItem(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f), text = "Reserved")
-        LegendItem(color = MaterialTheme.colorScheme.primary.copy(), text = "Selected")
+        LegendItem(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), text = strings.available)
+        LegendItem(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f), text = strings.reserved)
+        LegendItem(color = MaterialTheme.colorScheme.primary.copy(), text = strings.selected)
     }
 }
 
@@ -205,12 +207,12 @@ private fun BottomBar(price: Float, onBuyTicketsClick: () -> Unit) {
     ) {
         Column {
             Text(
-                "Total",
+                LocalStrings.current.total,
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = "€${price.formatPrice()}",
+                text = "${price.formatPrice()} €",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -221,7 +223,7 @@ private fun BottomBar(price: Float, onBuyTicketsClick: () -> Unit) {
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
-                "Buy Ticket(s)",
+                LocalStrings.current.buyTickets,
                 color = Color.White,
                 modifier = Modifier.padding(vertical = 8.dp)
             )

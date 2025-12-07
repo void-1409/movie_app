@@ -38,6 +38,7 @@ import data.remote.dto.MovieDetailDto
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import presentation.components.CreditChip
+import presentation.theme.LocalStrings
 
 @Composable
 fun MovieDetailScreen(
@@ -56,7 +57,7 @@ fun MovieDetailScreen(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Book Now", fontSize = 16.sp, modifier = Modifier.padding(8.dp))
+                    Text(LocalStrings.current.bookNow, fontSize = 16.sp, modifier = Modifier.padding(8.dp))
                 }
             }
         },
@@ -105,6 +106,8 @@ private fun MovieDetailContent(
     onBackClick: () -> Unit,
     onBookNowClick: () -> Unit
 ) {
+    val strings = LocalStrings.current
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         // Back Arrow and Title
         item {
@@ -145,7 +148,7 @@ private fun MovieDetailContent(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    "Storyline",
+                    strings.storyline,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -157,7 +160,7 @@ private fun MovieDetailContent(
 
                 // cast and crew
                 Spacer(modifier = Modifier.height(24.dp))
-                Text("Cast", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(strings.cast, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(cast) { castMember ->
@@ -166,7 +169,7 @@ private fun MovieDetailContent(
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
-                Text("Crew", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(strings.director, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(crew) { crewMember ->

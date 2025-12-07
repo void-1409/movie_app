@@ -25,6 +25,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import presentation.theme.LocalStrings
 import kotlin.random.Random
 
 @Composable
@@ -32,6 +33,7 @@ fun ConfirmationScreen(
     ticketId: String,
     onViewBookingClick: () -> Unit
 ) {
+    val strings = LocalStrings.current
     Box(modifier = Modifier.fillMaxSize()) {
         // animation (background)
         ConfettiEffect()
@@ -42,9 +44,9 @@ fun ConfirmationScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Booking Confirmed!", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(strings.bookingConfirmed, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Your ticket ID is")
+            Text(strings.yourTicketId)
             Text(ticketId, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
 
             Spacer(modifier = Modifier.weight(1f))
@@ -54,7 +56,7 @@ fun ConfirmationScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("View My Bookings", modifier = Modifier.padding(8.dp))
+                Text(strings.viewBooking, modifier = Modifier.padding(8.dp))
             }
         }
     }

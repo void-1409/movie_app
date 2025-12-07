@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.datetime.LocalDate
+import presentation.theme.LocalStrings
 
 @Composable
 fun ShowsScreen(
@@ -120,9 +121,12 @@ private fun ShowsTopBar(title: String, onBackClick: () -> Unit) {
 }
 
 @Composable
-private fun DateChip(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
-    val dayOfWeek = date.dayOfWeek.name.take(3).replaceFirstChar { it.uppercase() }
-    val month = date.month.name.take(3).replaceFirstChar { it.uppercase() }
+private fun DateChip(
+    date: LocalDate,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val strings = LocalStrings.current
 
     Card(
         onClick = onClick,
@@ -136,7 +140,7 @@ private fun DateChip(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = dayOfWeek,
+                text = strings.getShortDayName(date),
                 fontSize = 12.sp,
                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -147,7 +151,7 @@ private fun DateChip(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) 
                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = month,
+                text = strings.getShortMonthName(date),
                 fontSize = 12.sp,
                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -51,6 +51,7 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.datetime.LocalDate
 import presentation.components.TicketShape
+import presentation.theme.LocalStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +89,7 @@ fun TicketDetailScreen(
 fun TicketContent(ticket: Ticket) {
     // split point for the notch (approx 70% down)
     val notchOffsetY = 420.dp
+    val strings = LocalStrings.current
 
     Card(
         modifier = Modifier
@@ -147,14 +149,14 @@ fun TicketContent(ticket: Ticket) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 InfoItem(
                     icon = Icons.Default.CalendarToday,
-                    label = "Date",
+                    label = strings.date,
                     value = ticket.date.formatToString(),
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(Modifier.width(24.dp))
                 InfoItem(
                     icon = Icons.Default.AccessTime,
-                    label = "Time",
+                    label = strings.time,
                     value = ticket.time,
                     modifier = Modifier.weight(1f)
                 )
@@ -163,15 +165,15 @@ fun TicketContent(ticket: Ticket) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 InfoItem(
                     icon = Icons.Default.EventSeat,
-                    label = "Seats",
+                    label = strings.seats,
                     value = ticket.selectedSeats.joinToString(", ") { "${it.row}${it.number}" },
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(Modifier.width(24.dp))
                 InfoItem(
                     icon = null,
-                    label = "Price",
-                    value = "€${ticket.totalPrice}",
+                    label = strings.price,
+                    value = "${ticket.totalPrice} €",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -184,14 +186,14 @@ fun TicketContent(ticket: Ticket) {
             Spacer(modifier = Modifier.height(24.dp))
 
             // bottom section: barcode
-            Text("Show this code at entrance", color = Color.Gray, fontSize = 12.sp)
+            Text(strings.showCode, color = Color.Gray, fontSize = 12.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
             // Fake barcode generator
             BarcodeView(modifier = Modifier.fillMaxWidth().height(60.dp))
 
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Booking Number: ${ticket.bookingNumber}", style = MaterialTheme.typography.labelMedium, color = Color.Black)
+            Text("${strings.bookingNumber} ${ticket.bookingNumber}", style = MaterialTheme.typography.labelMedium, color = Color.Black)
         }
     }
 }

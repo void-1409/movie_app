@@ -15,6 +15,7 @@ import com.arkivanov.decompose.value.Value
 import presentation.root.MainNavTab
 import presentation.root.RootComponent
 import presentation.screens.home.HomeViewModel
+import presentation.theme.LocalStrings
 
 @Composable
 fun BottomNavBar(
@@ -22,31 +23,32 @@ fun BottomNavBar(
     onTabClick: (MainNavTab) -> Unit
 ) {
     val activeChild = stack.value.active.instance
+    val strings = LocalStrings.current
 
     NavigationBar {
         NavigationBarItem(
             selected = activeChild is RootComponent.Child.Home,
             onClick = { onTabClick(MainNavTab.HOME) }, // Temporary
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") }
+            label = { Text(strings.tabHome) }
         )
         NavigationBarItem(
             selected = activeChild is RootComponent.Child.Movies,
             onClick = { onTabClick(MainNavTab.MOVIES) },
             icon = { Icon(Icons.Default.PlayArrow, contentDescription = "Movies") },
-            label = { Text("Movies") }
+            label = { Text(strings.tabMovies) }
         )
         NavigationBarItem(
             selected = activeChild is RootComponent.Child.Tickets,
             onClick = { onTabClick(MainNavTab.TICKETS) },
             icon = { Icon(Icons.Default.Star, contentDescription = "Tickets") },
-            label = { Text("Tickets") }
+            label = { Text(strings.tabTickets) }
         )
         NavigationBarItem(
             selected = activeChild is RootComponent.Child.User,
             onClick = { onTabClick(MainNavTab.USER) },
             icon = { Icon(Icons.Default.Person, contentDescription = "User") },
-            label = { Text("User") }
+            label = { Text(strings.tabUser) }
         )
     }
 }

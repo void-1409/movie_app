@@ -30,6 +30,7 @@ import io.ktor.client.HttpClient
 import presentation.components.FilterChip
 import presentation.components.MovieCard
 import presentation.components.SearchBar
+import presentation.theme.LocalStrings
 
 @Composable
 fun MoviesScreen(
@@ -37,6 +38,7 @@ fun MoviesScreen(
     onMovieClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val strings = LocalStrings.current
 
     Column(
         modifier = Modifier
@@ -53,13 +55,13 @@ fun MoviesScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             TabButton(
-                text = "Now Playing",
+                text = strings.nowPlaying,
                 isSelected = uiState.selectedTab == MovieTab.NOW_PLAYING,
                 onClick = { viewModel.onTabSelected(MovieTab.NOW_PLAYING) }
             )
             Spacer(modifier = Modifier.width(8.dp))
             TabButton(
-                text = "Coming Soon",
+                text = strings.upcomingMovies,
                 isSelected = uiState.selectedTab == MovieTab.COMING_SOON,
                 onClick = { viewModel.onTabSelected(MovieTab.COMING_SOON) }
             )
@@ -70,7 +72,7 @@ fun MoviesScreen(
         // Filter Chips
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             item {
-                val filters = listOf("German", "English", "3D", "Action", "Sci-Fi")
+                val filters = listOf(strings.gerChip, strings.engChip, "3D", "Action", "Sci-Fi")
                 filters.forEach { filterText ->
                     FilterChip(
                         text = filterText,

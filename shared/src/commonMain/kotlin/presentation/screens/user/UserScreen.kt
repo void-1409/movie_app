@@ -176,7 +176,7 @@ fun UserHeader(userName: String, imageUrl: String, onEditClick: () -> Unit) {
             ) {
                 Icon(Icons.Default.Edit, null, tint = Color.Gray, modifier = Modifier.size(14.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Edit Profile", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(LocalStrings.current.editProfile, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
             }
         }
     }

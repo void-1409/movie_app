@@ -9,18 +9,40 @@ object EnStrings : AppStrings {
     override val tabTickets = "Tickets"
     override val tabUser = "User"
 
-    override val upNext = "Up Next"
-    override val later = "Later"
+    override val trending = "Trending"
+    override val nowPlaying = "In Cinemas"
+    override val upcomingMovies = "Coming Soon"
+    override val searchText = "Search for Movies, Cinemas..."
+
+    override val engChip = "English"
+    override val gerChip = "German"
+
+    override val storyline = "Storyline"
+    override val cast = "Cast"
+    override val director = "Director"
+    override val upcomingShows = "Upcoming Shows"
     override val bookNow = "Book Now"
 
+    override val available = "Available"
+    override val reserved = "Reserved"
+    override val selected = "Selected"
+    override val total = "Total"
+    override val buyTickets = "Buy Ticket(s)"
+
+    override val bookingConfirmed = "Booking Confirmed!"
+    override val yourTicketId = "Your ticket ID is"
+    override val viewBooking = "View My Bookings"
+
     override val myTickets = "My Tickets"
-    override val noTickets = "No tickets yet"
+    override val noTickets = "No Tickets Yet"
+    override val upNext = "Up Next"
+    override val later = "Later"
     override val date = "Date"
     override val time = "Time"
     override val seats = "Seats"
     override val price = "Price"
-    override val bookingId = "Booking ID"
-    override val paid = "PAID"
+    override val showCode = "Please show this code at entrance"
+    override val bookingNumber = "Booking Number"
 
     override val greeting = "Hi"
     override val editProfile = "Edit Profile"
@@ -31,28 +53,11 @@ object EnStrings : AppStrings {
     override val helpCenter = "Help Center"
     override val signOut = "Sign Out"
 
-    // logic for dates
-    private val days = mapOf(
-        DayOfWeek.MONDAY to "Mon",
-        DayOfWeek.TUESDAY to "Tue",
-        DayOfWeek.WEDNESDAY to "Wed",
-        DayOfWeek.THURSDAY to "Thu",
-        DayOfWeek.FRIDAY to "Fri",
-        DayOfWeek.SATURDAY to "Sat",
-        DayOfWeek.SUNDAY to "Sun",
-    )
-
-    private val months = listOf(
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Spe", "Oct", "Nov", "Dec"
-    )
-
-    override fun formatDate(date: LocalDate): String {
-        val dayName = days[date.dayOfWeek] ?: ""
-        val monthName = months[date.monthNumber - 1]
-        val dayNum = date.dayOfMonth.toString().padStart(2, '0')
-        return "$dayName, $dayNum $monthName ${date.year}"
+    override fun getShortDayName(date: LocalDate): String {
+        return date.dayOfWeek.name.take(3).uppercase()
     }
 
-    override fun formatPrice(value: Float): String = "€$value"
+    override fun getShortMonthName(date: LocalDate): String {
+        return date.month.name.take(3).uppercase()
+    }
 }
