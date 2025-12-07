@@ -25,6 +25,7 @@ import presentation.screens.shows.ShowsViewModel
 import presentation.screens.tickets.TicketsViewModel
 import domain.repository.TicketRepository
 import org.koin.core.component.get
+import presentation.screens.user.UserViewModel
 
 class RootComponent(
     componentContext: ComponentContext
@@ -51,7 +52,7 @@ class RootComponent(
         // check if on main tab but NOT on the Home screen
         if (
             activeChild !is Child.Home &&
-            (activeChild is Child.Movies || activeChild is Child.Tickets || activeChild is Child.Profile)
+            (activeChild is Child.Movies || activeChild is Child.Tickets || activeChild is Child.User)
         ) {
             // navigate back to home screen
             onTabClick(MainNavTab.HOME)
@@ -93,7 +94,10 @@ class RootComponent(
             }
             Config.Home -> Child.Home(homeViewModel)
             Config.Movies -> Child.Movies(moviesViewModel)
-            Config.Profile -> Child.Profile
+            Config.User -> {
+                val viewModel: UserViewModel by inject()
+                Child.User(viewModel)
+            }
             is Config.TicketDetail -> {
                 val ticketRepository: TicketRepository = get()
 
@@ -112,7 +116,7 @@ class RootComponent(
             MainNavTab.HOME -> navigation.replaceAll(Config.Home)
             MainNavTab.MOVIES -> navigation.replaceAll(Config.Movies)
             MainNavTab.TICKETS -> navigation.replaceAll(Config.Tickets)
-            MainNavTab.PROFILE -> navigation.replaceAll(Config.Profile)
+            MainNavTab.USER -> navigation.replaceAll(Config.User)
         }
     }
     // when clicked on a movie card
@@ -125,7 +129,7 @@ class RootComponent(
         data class Home(val viewModel: HomeViewModel) : Child()
         data class Movies(val viewModel: MoviesViewModel) : Child()
         data class Tickets(val viewModel: TicketsViewModel) : Child()
-        data object Profile : Child()
+        data class User(val viewModel: UserViewModel) : Child()
         data class Detail(val viewModel: MovieDetailViewModel) : Child()
         data class Shows(val viewModel: ShowsViewModel, val movieId: Int) : Child()
         data class SeatSelection(
@@ -146,7 +150,7 @@ class RootComponent(
         @Serializable
         data object Tickets : Config
         @Serializable
-        data object Profile : Config
+        data object User : Config
         @Serializable
         data class Detail(val movieId: Int) : Config
         @Serializable
@@ -199,5 +203,5 @@ class RootComponent(
 }
 
 enum class MainNavTab {
-    HOME, MOVIES, TICKETS, PROFILE
+    HOME, MOVIES, TICKETS, USER
 }

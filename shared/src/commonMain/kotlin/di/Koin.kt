@@ -17,6 +17,7 @@ import presentation.screens.movies.MoviesViewModel
 import presentation.screens.seats.SeatSelectionViewModel
 import presentation.screens.shows.ShowsViewModel
 import presentation.screens.tickets.TicketsViewModel
+import presentation.screens.user.UserViewModel
 
 val appModule = module {
     // provide a singleton instance of our HttpClient
@@ -49,6 +50,8 @@ val appModule = module {
     }
 
     factory { TicketsViewModel(get()) }
+
+    factory { UserViewModel() }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

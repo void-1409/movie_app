@@ -43,10 +43,10 @@ fun BottomNavBar(
             label = { Text("Tickets") }
         )
         NavigationBarItem(
-            selected = activeChild is RootComponent.Child.Profile,
-            onClick = { onTabClick(MainNavTab.PROFILE) },
-            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") }
+            selected = activeChild is RootComponent.Child.User,
+            onClick = { onTabClick(MainNavTab.USER) },
+            icon = { Icon(Icons.Default.Person, contentDescription = "User") },
+            label = { Text("User") }
         )
     }
 }

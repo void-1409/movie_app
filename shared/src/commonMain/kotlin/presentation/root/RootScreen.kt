@@ -10,7 +10,7 @@ import presentation.screens.confirmation.ConfirmationScreen
 import presentation.screens.detail.MovieDetailScreen
 import presentation.screens.home.HomeScreen
 import presentation.screens.movies.MoviesScreen
-import presentation.screens.profile.ProfileScreen
+import presentation.screens.user.UserScreen
 import presentation.screens.seats.SeatSelectionScreen
 import presentation.screens.shows.ShowsScreen
 import presentation.screens.tickets.TicketDetailScreen
@@ -27,7 +27,7 @@ fun RootScreen(
                 child is RootComponent.Child.Home ||
                 child is RootComponent.Child.Movies ||
                 child is RootComponent.Child.Tickets ||
-                child is RootComponent.Child.Profile
+                child is RootComponent.Child.User
             ) {
                 BottomNavBar(
                     stack = component.childStack,
@@ -58,7 +58,10 @@ fun RootScreen(
                     ticket = child.ticket,
                     onBackClick = { component.onBackClicked() }
                 )
-                is RootComponent.Child.Profile -> ProfileScreen()
+                is RootComponent.Child.User -> UserScreen(
+                    viewModel = child.viewModel,
+                    onEditProfileClick = { /* TODO */ }
+                )
                 is RootComponent.Child.Detail -> MovieDetailScreen(
                     viewModel = child.viewModel,
                     onBackClick = { component.onBackClicked() },
