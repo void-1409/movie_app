@@ -56,6 +56,7 @@ interface AppStrings {
     val editProfile: String
     val bookingHistory: String
     val changeLanguage: String
+    val selectLanguage: String
     val paymentMethods: String
     val faceId: String
     val helpCenter: String

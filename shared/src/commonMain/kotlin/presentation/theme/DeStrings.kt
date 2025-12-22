@@ -49,6 +49,7 @@ object DeStrings : AppStrings {
     override val editProfile = "Profil bearbeiten"
     override val bookingHistory = "Buchungsverlauf"
     override val changeLanguage = "Sprache ändern"
+    override val selectLanguage = "Sprache auswählen"
     override val paymentMethods = "Zahlungsmethoden"
     override val faceId = "Face ID / Touch ID"
     override val helpCenter = "Hilfezentrum"

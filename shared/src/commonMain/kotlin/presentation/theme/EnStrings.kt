@@ -48,6 +48,7 @@ object EnStrings : AppStrings {
     override val editProfile = "Edit Profile"
     override val bookingHistory = "Booking History"
     override val changeLanguage = "Change Language"
+    override val selectLanguage = "Select Language"
     override val paymentMethods = "Payment Methods"
     override val faceId = "Face ID / Touch ID"
     override val helpCenter = "Help Center"

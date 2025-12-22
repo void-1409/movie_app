@@ -2,6 +2,7 @@ package presentation.screens.user
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,16 +18,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -34,6 +39,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,18 +51,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import domain.manager.AppLanguage
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import presentation.theme.LocalStrings
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserScreen(
     viewModel: UserViewModel,
     onEditProfileClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
     val strings = LocalStrings.current
+
+    var showLanguageSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { Spacer(Modifier.height(40.dp)) },
@@ -73,25 +84,21 @@ fun UserScreen(
                 imageUrl = uiState.profileImage,
                 onEditClick = onEditProfileClick
             )
-
             Spacer(Modifier.height(12.dp))
 
             // menu options
-
             UserOptionItem(
                 icon = Icons.Default.History,
                 title = strings.bookingHistory,
                 onClick = { /* TODO */}
             )
-
             Spacer(Modifier.height(12.dp))
 
             UserOptionItem(
                 icon = Icons.Default.Language,
                 title = strings.changeLanguage,
-                onClick = { viewModel.onToggleLanguage() }
+                onClick = { showLanguageSheet = true }
             )
-
             Spacer(Modifier.height(12.dp))
 
             UserOptionItem(
@@ -99,7 +106,6 @@ fun UserScreen(
                 title = strings.paymentMethods,
                 onClick = { /* TODO */ }
             )
-
             Spacer(Modifier.height(12.dp))
 
             UserToggleItem(
@@ -108,7 +114,6 @@ fun UserScreen(
                 isChecked = uiState.isFaceIdEnabled,
                 onToggle = { viewModel.toggleFaceId(it) }
             )
-
             Spacer(Modifier.height(12.dp))
 
             UserOptionItem(
@@ -116,7 +121,6 @@ fun UserScreen(
                 title = strings.helpCenter,
                 onClick = { /* TODO */}
             )
-
             Spacer(Modifier.height(24.dp))
 
             // sign out
@@ -140,6 +144,67 @@ fun UserScreen(
                     modifier = Modifier.size(20.dp)
                 )
             }
+        }
+
+        // --- Language Bottom Sheet ---
+        if (showLanguageSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showLanguageSheet = false },
+                containerColor = MaterialTheme.colorScheme.surface,
+                dragHandle = { BottomSheetDefaults.DragHandle() }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 40.dp)
+                ) {
+                    Text(
+                        text = strings.selectLanguage,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    // iterate over available languages
+                    AppLanguage.entries.forEach { language ->
+                        LanguageSelectionItem(
+                            languageName = language.displayName,
+                            isSelected = language == uiState.currentLanguage,
+                            onClick = {
+                                viewModel.onLanguageSelected(language)
+                                showLanguageSheet = false   // close sheet after selection
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LanguageSelectionItem(languageName: String, isSelected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = languageName,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+        if (isSelected) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Selected",
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
