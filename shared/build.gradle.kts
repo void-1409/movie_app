@@ -53,6 +53,8 @@ kotlin {
             // Supabase Auth and Database
             implementation(libs.supabase.gotrue)
             implementation(libs.supabase.postgres)
+            // Session storage
+            implementation(libs.multiplatform.settings)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

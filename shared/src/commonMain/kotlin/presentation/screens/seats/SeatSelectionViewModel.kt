@@ -6,6 +6,7 @@ import data.dummy.generateDummySeatLayout
 import domain.model.Seat
 import domain.model.SeatStatus
 import domain.model.Ticket
+import domain.repository.AuthRepository
 import domain.repository.MovieRepository
 import domain.repository.TicketRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +25,8 @@ class SeatSelectionViewModel(
     private val date: LocalDate,
     private val time: String,
     private val ticketRepository: TicketRepository,
-    private val movieRepository: MovieRepository
+    private val movieRepository: MovieRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SeatSelectionState())
     val uiState = _uiState.asStateFlow()
@@ -73,6 +75,13 @@ class SeatSelectionViewModel(
     @OptIn(ExperimentalUuidApi::class)
     fun onBuyTicketsClicked() {
         viewModelScope.launch {
+            // 1. Check User Authentication
+            val userEmail = authRepository.getCurrentUserEmail()
+            if (userEmail == null) {
+                _navigationEvent.emit("REQUIRE_LOGIN")
+                return@launch
+            }
+            
             val currentState = _uiState.value
             if (currentState.selectedSeats.isEmpty()) return@launch
 

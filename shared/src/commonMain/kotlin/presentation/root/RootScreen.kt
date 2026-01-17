@@ -8,9 +8,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.arkivanov.decompose.router.stack.push
 import domain.manager.LanguageManager
 import org.koin.compose.koinInject
 import presentation.components.BottomNavBar
+import presentation.screens.auth.AuthScreen
 import presentation.screens.confirmation.ConfirmationScreen
 import presentation.screens.detail.MovieDetailScreen
 import presentation.screens.home.HomeScreen
@@ -18,6 +20,7 @@ import presentation.screens.movies.MoviesScreen
 import presentation.screens.user.UserScreen
 import presentation.screens.seats.SeatSelectionScreen
 import presentation.screens.shows.ShowsScreen
+import presentation.screens.splash.SplashScreen
 import presentation.screens.tickets.TicketDetailScreen
 import presentation.screens.tickets.TicketsScreen
 import presentation.theme.LocalStrings
@@ -77,7 +80,10 @@ fun RootScreen(
 
                     is RootComponent.Child.User -> UserScreen(
                         viewModel = child.viewModel,
-                        onEditProfileClick = { /* TODO */ }
+                        onEditProfileClick = { /* TODO */ },
+                        onNavigateToAuth = {
+                            component.onNavigateToAuth()
+                        }
                     )
 
                     is RootComponent.Child.Detail -> MovieDetailScreen(
@@ -107,9 +113,12 @@ fun RootScreen(
                         movieTitle = child.movieTitle,
                         onBackClick = { component.onBackClicked() },
                         onNavigateToConfirmation = { ticketId ->
-                            component.onNavigateToConfirmation(
-                                ticketId
-                            )
+                            if (ticketId == "REQUIRE_LOGIN") {
+                                // if event is special screen (user not logged in), go to Auth
+                                component.onNavigateToAuth()
+                            } else {
+                                component.onNavigateToConfirmation(ticketId)
+                            }
                         }
                     )
 
@@ -117,6 +126,14 @@ fun RootScreen(
                         ticketId = child.ticketId,
                         onViewBookingClick = { component.onNavigateToTickets() }
                     )
+
+                    is RootComponent.Child.Auth -> AuthScreen(
+                        viewModel = child.viewModel,
+                        onAuthSuccess = { component.onAuthSuccessOrSkip() },
+                        onSkip = { component.onAuthSuccessOrSkip() }
+                    )
+
+                    RootComponent.Child.Splash -> SplashScreen()
                 }
             }
         }

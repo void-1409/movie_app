@@ -2,9 +2,14 @@ package domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
+enum class AuthStatus {
+    LOADING,
+    AUTHENTICATED,
+    UNAUTHENTICATED
+}
+
 interface AuthRepository {
-    // returns true if a user is currently logged in
-    val isUserLoggedIn: Flow<Boolean>
+    val authStatus: Flow<AuthStatus>
 
     suspend fun signUp(email: String, password: String, name: String): Result<Unit>
     suspend fun signIn(email: String, password: String): Result<Unit>

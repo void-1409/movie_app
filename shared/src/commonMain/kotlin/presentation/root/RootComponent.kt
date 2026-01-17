@@ -11,6 +11,8 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.backhandler.BackCallback
 import domain.model.Ticket
+import domain.repository.AuthRepository
+import domain.repository.AuthStatus
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
@@ -24,7 +26,11 @@ import presentation.screens.seats.SeatSelectionViewModel
 import presentation.screens.shows.ShowsViewModel
 import presentation.screens.tickets.TicketsViewModel
 import domain.repository.TicketRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.component.get
+import presentation.screens.auth.AuthViewModel
 import presentation.screens.user.UserViewModel
 
 class RootComponent(
@@ -32,13 +38,14 @@ class RootComponent(
 ) : ComponentContext by componentContext, KoinComponent {
 
     private val navigation = StackNavigation<Config>()
+    private val authRepository: AuthRepository by inject()
     private val homeViewModel: HomeViewModel by inject()
     private val moviesViewModel: MoviesViewModel by inject()
 
     val childStack: Value<ChildStack<*, Child>> =
         childStack(
             source = navigation,
-            initialConfiguration = Config.Home,
+            initialConfiguration = Config.Splash,
             handleBackButton = true,
             serializer = Config.serializer(),
             childFactory = ::createChild
@@ -63,11 +70,26 @@ class RootComponent(
     }
 
     init {
+        val scope = CoroutineScope(Dispatchers.Main)
+
+        scope.launch {
+            authRepository.authStatus.collect { status ->
+                // only take action if we are currently on the Splash screen
+                if (childStack.value.active.configuration is Config.Splash) {
+                    when (status) {
+                        AuthStatus.AUTHENTICATED -> navigation.replaceAll(Config.Home)
+                        AuthStatus.UNAUTHENTICATED -> navigation.replaceAll(Config.Auth)
+                        AuthStatus.LOADING -> { /* Do nothing, stay on Splash */ }
+                    }
+                }
+            }
+        }
         backHandler.register(backCallback)
     }
 
     private fun createChild(config: Config, context: ComponentContext): Child =
         when (config) {
+            is Config.Splash -> Child.Splash
             is Config.Detail -> {
                 // use koin to create instance of movie detail screen viewmodel
                 val viewModel: MovieDetailViewModel by inject { parametersOf(config.movieId) }
@@ -109,7 +131,18 @@ class RootComponent(
                     Child.Tickets(viewModel)
                 }
             }
+            is Config.Auth -> Child.Auth(get())
         }
+
+    // function to handle Auth completion
+    fun onAuthSuccessOrSkip() {
+        navigation.replaceAll(Config.Home)
+    }
+
+    @OptIn(DelicateDecomposeApi::class)
+    fun onNavigateToAuth() {
+        navigation.push(Config.Auth)
+    }
 
     fun onTabClick(tab: MainNavTab) {
         when (tab) {
@@ -126,6 +159,7 @@ class RootComponent(
     }
 
     sealed class Child {
+        data object Splash : Child()
         data class Home(val viewModel: HomeViewModel) : Child()
         data class Movies(val viewModel: MoviesViewModel) : Child()
         data class Tickets(val viewModel: TicketsViewModel) : Child()
@@ -139,10 +173,13 @@ class RootComponent(
         ) : Child()
         data class Confirmation(val ticketId: String) : Child()
         data class TicketDetail(val ticket: Ticket) : Child()
+        data class Auth(val viewModel: AuthViewModel) : Child()
     }
 
     @Serializable // Use @Serializable on the parent sealed interface
     private sealed interface Config {
+        @Serializable
+        data object Splash : Config
         @Serializable
         data object Home : Config
         @Serializable
@@ -167,6 +204,8 @@ class RootComponent(
         data class Confirmation(val ticketId: String) : Config
         @Serializable
         data class TicketDetail(val ticketId: String) : Config
+        @Serializable
+        data object Auth: Config
     }
 
     fun onBackClicked() {

@@ -1,6 +1,7 @@
 package data.repository
 
 import domain.repository.AuthRepository
+import domain.repository.AuthStatus
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
@@ -14,8 +15,12 @@ class AuthRepositoryImpl(
     private val supabase: SupabaseClient
 ) : AuthRepository {
 
-    override val isUserLoggedIn: Flow<Boolean> = supabase.auth.sessionStatus.map {
-        it is SessionStatus.Authenticated
+    override val authStatus: Flow<AuthStatus> = supabase.auth.sessionStatus.map { status ->
+        when (status) {
+            is SessionStatus.Authenticated -> AuthStatus.AUTHENTICATED
+            is SessionStatus.NotAuthenticated -> AuthStatus.UNAUTHENTICATED
+            else -> AuthStatus.LOADING
+        }
     }
 
     override suspend fun signUp(email: String, password: String, name: String): Result<Unit> {

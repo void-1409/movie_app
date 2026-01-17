@@ -1,6 +1,7 @@
 package di
 
 import com.cinemate.shared.ApiKey
+import com.russhwolf.settings.Settings
 import data.remote.ApiServiceImpl
 import data.remote.httpClient
 import data.repository.AuthRepositoryImpl
@@ -12,6 +13,7 @@ import domain.repository.TicketRepository
 import domain.repository.TicketRepositoryImpl
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.SettingsSessionManager
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import kotlinx.datetime.LocalDate
@@ -39,14 +41,20 @@ val appModule = module {
 
     single { LanguageManager() }
 
+    single { Settings() }
+
     // supabase client
     single {
+        val settings: Settings = get()
+
         createSupabaseClient(
             supabaseUrl = ApiKey.SUPABASE_URL,
             supabaseKey = ApiKey.SUPABASE_KEY
         ) {
             // install the auth module (GoTrue)
-            install(Auth)
+            install(Auth) {
+                sessionManager = SettingsSessionManager(settings = settings)
+            }
 
             // install the database module (postgrest)
             install(Postgrest) {
@@ -73,15 +81,16 @@ val appModule = module {
             date = date,
             time = time,
             ticketRepository = get(),
-            movieRepository = get()
+            movieRepository = get(),
+            authRepository = get()
         )
     }
 
     factory { TicketsViewModel(get()) }
 
-    factory { UserViewModel(get()) }
+    factory { UserViewModel(get(), get()) }
 
-    factory { AuthViewModel(get()) }
+    factory { AuthViewModel(get(), get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

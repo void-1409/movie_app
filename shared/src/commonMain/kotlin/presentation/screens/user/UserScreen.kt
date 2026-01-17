@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CreditCard
@@ -60,7 +61,8 @@ import presentation.theme.LocalStrings
 @Composable
 fun UserScreen(
     viewModel: UserViewModel,
-    onEditProfileClick: () -> Unit
+    onEditProfileClick: () -> Unit,
+    onNavigateToAuth: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val strings = LocalStrings.current
@@ -82,7 +84,8 @@ fun UserScreen(
             UserHeader(
                 userName = uiState.userName,
                 imageUrl = uiState.profileImage,
-                onEditClick = onEditProfileClick
+                isGuest = uiState.isGuest,
+                onEditClick = if (uiState.isGuest) { {} } else onEditProfileClick   // disabled edit for guests
             )
             Spacer(Modifier.height(12.dp))
 
@@ -121,26 +124,31 @@ fun UserScreen(
                 title = strings.helpCenter,
                 onClick = { /* TODO */}
             )
-            Spacer(Modifier.height(24.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
-            // sign out
+            // dynamic login/sign out button
             Button(
-                onClick = { viewModel.onSignOut() },
+                onClick = {
+                    viewModel.onAuthButtonClick(navigateToAuth = onNavigateToAuth)
+                },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (uiState.isGuest) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                ),
                 shape = RoundedCornerShape(16.dp)
             ) {
+                // dynamic text
                 Text(
-                    text = strings.signOut,
-                    color = MaterialTheme.colorScheme.primary,
+                    text = if (uiState.isGuest) "Log In / Sign Up" else strings.signOut,
+                    color = if (uiState.isGuest) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.secondary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.width(8.dp))
                 Icon(
-                    Icons.AutoMirrored.Filled.Logout,
+                    imageVector = if (uiState.isGuest) Icons.AutoMirrored.Filled.Login else Icons.AutoMirrored.Filled.Logout,
                     null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (uiState.isGuest) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -210,7 +218,7 @@ fun LanguageSelectionItem(languageName: String, isSelected: Boolean, onClick: ()
 }
 
 @Composable
-fun UserHeader(userName: String, imageUrl: String, onEditClick: () -> Unit) {
+fun UserHeader(userName: String, imageUrl: String, isGuest: Boolean, onEditClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -235,13 +243,16 @@ fun UserHeader(userName: String, imageUrl: String, onEditClick: () -> Unit) {
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(onClick = onEditClick)
-            ) {
-                Icon(Icons.Default.Edit, null, tint = Color.Gray, modifier = Modifier.size(14.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(LocalStrings.current.editProfile, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            // only show edit profile if NOT guest
+            if (!isGuest) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable(onClick = onEditClick)
+                ) {
+                    Icon(Icons.Default.Edit, null, tint = Color.Gray, modifier = Modifier.size(14.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(LocalStrings.current.editProfile, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                }
             }
         }
     }
