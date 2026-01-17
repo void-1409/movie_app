@@ -50,6 +50,9 @@ kotlin {
             implementation(libs.kamel.image)
             // Date and Time
             implementation(libs.kotlinx.datetime)
+            // Supabase Auth and Database
+            implementation(libs.supabase.gotrue)
+            implementation(libs.supabase.postgres)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -78,7 +81,10 @@ tasks.register("generateApiKey") {
         properties.load(localPropertiesFile.inputStream())
     }
 
-    val apikey = properties.getProperty("tmdb.api.key", "")
+    // fetch keys and values
+    val tmdbApiKey = properties.getProperty("tmdb.api.key", "")
+    val supabaseUrl = properties.getProperty("SUPABASE_URL", "")
+    val supabaseKey = properties.getProperty("SUPABASE_KEY", "")
     val generatedFile = file("$buildDir/generated/moko/common/com/cinemate/shared/ApiKey.kt")
 
     outputs.files(generatedFile)
@@ -90,7 +96,9 @@ tasks.register("generateApiKey") {
                  package com.cinemate.shared
                  
                  object ApiKey {
-                    const val TMDB_API_KEY = "$apikey"
+                    const val TMDB_API_KEY = "$tmdbApiKey"
+                    const val SUPABASE_URL = "$supabaseUrl"
+                    const val SUPABASE_KEY = "$supabaseKey"
                  }
             """.trimIndent()
         )

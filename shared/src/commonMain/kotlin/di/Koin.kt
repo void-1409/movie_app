@@ -1,16 +1,24 @@
 package di
 
+import com.cinemate.shared.ApiKey
 import data.remote.ApiServiceImpl
 import data.remote.httpClient
+import data.repository.AuthRepositoryImpl
 import data.repository.MovieRepositoryImpl
 import domain.manager.LanguageManager
+import domain.repository.AuthRepository
 import domain.repository.MovieRepository
 import domain.repository.TicketRepository
 import domain.repository.TicketRepositoryImpl
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.serializer.KotlinXSerializer
 import kotlinx.datetime.LocalDate
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import presentation.screens.auth.AuthViewModel
 import presentation.screens.detail.MovieDetailViewModel
 import presentation.screens.home.HomeViewModel
 import presentation.screens.movies.MoviesViewModel
@@ -30,6 +38,24 @@ val appModule = module {
     single<TicketRepository> { TicketRepositoryImpl }
 
     single { LanguageManager() }
+
+    // supabase client
+    single {
+        createSupabaseClient(
+            supabaseUrl = ApiKey.SUPABASE_URL,
+            supabaseKey = ApiKey.SUPABASE_KEY
+        ) {
+            // install the auth module (GoTrue)
+            install(Auth)
+
+            // install the database module (postgrest)
+            install(Postgrest) {
+                serializer = KotlinXSerializer()
+            }
+        }
+    }
+
+    single<AuthRepository> { AuthRepositoryImpl(get()) }
 
     // provide a new instance of HomeViewModel every time its requested
     factory { HomeViewModel(get()) }
@@ -54,6 +80,8 @@ val appModule = module {
     factory { TicketsViewModel(get()) }
 
     factory { UserViewModel(get()) }
+
+    factory { AuthViewModel(get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

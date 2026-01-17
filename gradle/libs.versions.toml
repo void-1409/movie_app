@@ -20,6 +20,7 @@ decompose = "3.3.0"
 koin = "4.1.0"
 kamel = "1.0.7"
 datetime = "0.6.0"
+supabase = "2.6.1"
 
 
 [libraries]
@@ -55,6 +56,9 @@ kamel-image = { module = "media.kamel:kamel-image-default", version.ref = "kamel
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons" }
 # Date and Time
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
+# Supabase
+supabase-gotrue = { module = "io.github.jan-tennert.supabase:gotrue-kt", version.ref = "supabase" }
+supabase-postgres = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 
 
 
