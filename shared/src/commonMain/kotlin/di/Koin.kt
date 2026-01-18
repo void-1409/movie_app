@@ -39,7 +39,7 @@ val appModule = module {
 
     single<TicketRepository> { TicketRepositoryImpl }
 
-    single { LanguageManager() }
+    single { LanguageManager(get()) }
 
     single { Settings() }
 
