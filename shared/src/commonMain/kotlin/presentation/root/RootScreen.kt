@@ -3,13 +3,18 @@ package presentation.root
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.router.stack.push
 import domain.manager.LanguageManager
+import kotlinx.coroutines.flow.collect
 import org.koin.compose.koinInject
 import presentation.components.BottomNavBar
 import presentation.screens.auth.AuthScreen
@@ -30,14 +35,25 @@ fun RootScreen(
     child: RootComponent.Child,
     component: RootComponent
 ) {
+    // snackbar state
+    val snackbarHostState = remember { SnackbarHostState() }
+
     // inject the LanguageManager
     val languageManager: LanguageManager = koinInject()
 
     // observe current strings
     val currentStrings by languageManager.appStrings.collectAsState()
 
+    // listen for messages from component
+    LaunchedEffect(component) {
+        component.messageEvents.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     CompositionLocalProvider(LocalStrings provides currentStrings) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = {
                 if (
                     child is RootComponent.Child.Home ||
@@ -98,12 +114,22 @@ fun RootScreen(
                         viewModel = child.viewModel,
                         onBackClick = { component.onBackClicked() },
                         onShowtimeClick = { cinemaName, time ->
-                            component.onNavigateToSeatSelection(
-                                movieId = child.movieId,
-                                movieTitle = child.viewModel.uiState.value.movieTitle,
+                            child.viewModel.onShowtimeSelected(
                                 cinema = cinemaName,
-                                date = child.viewModel.uiState.value.selectedDate!!,
-                                time = time
+                                time = time,
+                                onNavigate = {
+                                    component.onNavigateToSeatSelection(
+                                        movieId = child.movieId,
+                                        movieTitle = child.viewModel.uiState.value.movieTitle,
+                                        cinema = cinemaName,
+                                        date = child.viewModel.uiState.value.selectedDate!!,
+                                        time = time
+                                    )
+                                },
+                                onRequireLogin = {
+                                    component.showMessage("Please sign in to select seats")
+                                    component.onNavigateToAuth()
+                                }
                             )
                         }
                     )

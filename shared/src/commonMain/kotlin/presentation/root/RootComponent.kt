@@ -28,6 +28,8 @@ import presentation.screens.tickets.TicketsViewModel
 import domain.repository.TicketRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import presentation.screens.auth.AuthViewModel
@@ -41,6 +43,8 @@ class RootComponent(
     private val authRepository: AuthRepository by inject()
     private val homeViewModel: HomeViewModel by inject()
     private val moviesViewModel: MoviesViewModel by inject()
+    private val _messageEvents = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    val messageEvents = _messageEvents.asSharedFlow()
 
     val childStack: Value<ChildStack<*, Child>> =
         childStack(
@@ -67,6 +71,11 @@ class RootComponent(
             // otherwise (on home screen or sub-screens), default action
             navigation.pop()
         }
+    }
+
+    // to show messages
+    fun showMessage(message: String) {
+        _messageEvents.tryEmit(message)
     }
 
     init {
@@ -140,7 +149,8 @@ class RootComponent(
     }
 
     @OptIn(DelicateDecomposeApi::class)
-    fun onNavigateToAuth() {
+    fun onNavigateToAuth(reason: String? = null) {
+        if (reason != null) showMessage(reason)
         navigation.push(Config.Auth)
     }
 
